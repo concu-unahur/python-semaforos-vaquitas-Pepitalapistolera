@@ -3,6 +3,7 @@ import random
 import time
 import threading
 
+semaforo = threading.Semaphore(1)
 inicioPuente = 10
 largoPuente = 20
 
@@ -20,9 +21,18 @@ class Vaca(threading.Thread):
     print(' ' * self.posicion + "🐮")
 
   def run(self):
-    while(True):
-      self.avanzar()
 
+    while(True):
+      if(self.posicion < inicioPuente):
+        self.avanzar()
+      if(self.posicion == inicioPuente):
+        semaforo.acquire()
+      self.avanzar()
+      if(self.posicion == largoPuente + inicioPuente):
+        semaforo.release()
+        break
+      
+          
 vacas = []
 for i in range(5):
   v = Vaca()
@@ -37,6 +47,7 @@ def dibujarPuente():
 
 while(True):
   cls()
+  print('-------->NO TE LAS COMAS!<--------')
   print('Apretá Ctrl + C varias veces para salir...')
   print()
   dibujarPuente()
